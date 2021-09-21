@@ -69,6 +69,55 @@ mutation_rules = {
     "BreakConstructorInitializers": make_choice(
         "BeforeColon", "BeforeComma", "AfterColon"
     ),
+    "SortJavaStaticImport": make_choice("Before", "After"),
+    "BreakInheritanceList": make_choice(
+        "BeforeColon", "BeforeComma", "AfterColon", "AfterComma"
+    ),
+    "InsertTrailingCommas": make_choice("None", "Wrapped"),
+    "AlignConsecutiveDeclarations": make_choice(
+        "None",
+        "Consecutive",
+        "AcrossEmptyLines",
+        "AcrossComments",
+        "AcrossEmptyLinesAndComments",
+    ),
+    "ObjCBinPackProtocolList": make_choice("Auto", "Always", "Never"),
+    "BitFieldColonSpacing": make_choice("Both", "None", "Before", "After"),
+    "IndentExternBlock": make_choice("AfterExternBlock", "NoIndent", "Indent"),
+    "SpaceAroundPointerQualifiers": make_choice("Default", "Before", "After", "Both"),
+    "IndentPPDirectives": make_choice("None", "AfterHash", "BeforeHash"),
+    "AlignOperands": make_choice("DontAlign", "Align", "AlignAfterOperator"),
+    "AllowShortLambdasOnASingleLine": make_choice("None", "Empty", "Inline", "All"),
+    "EmptyLineBeforeAccessModifier": make_choice(
+        "Never", "Leave", "LogicalBlock", "Always"
+    ),
+    "AllowShortBlocksOnASingleLine": make_choice("Never", "Empty", "Always"),
+    "AlignConsecutiveMacros": make_choice(
+        "None",
+        "Consecutive",
+        "AcrossEmptyLines",
+        "AcrossComments",
+        "AcrossEmptyLinesAndComments",
+    ),
+    "AlignConsecutiveBitFields": make_choice(
+        "None", "Consecutive", "AcrossEmptyLines", "AcrossComments"
+    ),
+    "AlignConsecutiveAssignments": make_choice(
+        "None",
+        "Consecutive",
+        "AcrossEmptyLines",
+        "AcrossComments",
+        "AcrossEmptyLinesAndComments",
+    ),
+    "IncludeBlocks": make_choice("Preserve", "Merge", "Regroup"),
+    "ObjCBinPackProtocolList": make_choice("Auto", "Always", "Never"),
+    "AfterControlStatement": make_choice("Never", "Multiline", "Always"),
+    "AlwaysBreakTemplateDeclarations": make_choice("No", "MultiLine", "Yes"),
+    "AllowShortIfStatementsOnASingleLine": make_choice(
+        "Never", "WithoutElse", "OnlyFirstIf", "AllIfsAndElse"
+    ),
+    "PenaltyIndentedWhitespace": make_delta_sq(2),
+    "PenaltyBreakTemplateDeclaration": make_delta_sq(10),
 }
 
 
