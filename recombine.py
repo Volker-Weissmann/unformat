@@ -7,8 +7,9 @@ def make_choice(*choices):
 
 
 def make_delta_sq(factor, minimum=0):
-    return lambda value, mutation_rate: max(minimum,
-                                            int(value) + randrange(-factor, factor + 1) * randrange(factor + 1))
+    return lambda value, mutation_rate: max(
+        minimum, int(value) + randrange(-factor, factor + 1) * randrange(factor + 1)
+    )
 
 
 def make_range(start, stop):
@@ -23,12 +24,18 @@ mutation_rules = {
     "PenaltyBreakFirstLessLess": make_delta_sq(10),
     "MacroBlockEnd": lambda value, mutation_rate: value,
     "MacroBlockBegin": lambda value, mutation_rate: value,
-    "IncludeCategories": lambda value, mutation_rate: [mutate(item, mutation_rate) for item in value],
+    "IncludeCategories": lambda value, mutation_rate: [
+        mutate(item, mutation_rate) for item in value
+    ],
     "    Priority": make_range(1, 4),
     "AlignAfterOpenBracket": make_choice("Align", "DontAlign", "AlwaysBreak"),
-    "AlwaysBreakAfterReturnType": make_choice("None", "All", "TopLevel", "AllDefinitions", "TopLevelDefinitions"),
+    "AlwaysBreakAfterReturnType": make_choice(
+        "None", "All", "TopLevel", "AllDefinitions", "TopLevelDefinitions"
+    ),
     "AccessModifierOffset": make_range(-8, 9),
-    "BreakBeforeBraces": make_choice("Attach", "Linux", "Mozilla", "Stroustrup", "Allman", "GNU", "WebKit", "Custom"),
+    "BreakBeforeBraces": make_choice(
+        "Attach", "Linux", "Mozilla", "Stroustrup", "Allman", "GNU", "WebKit", "Custom"
+    ),
     "PenaltyBreakComment": make_delta_sq(10),
     "PenaltyExcessCharacter": make_delta_sq(1000),
     "ObjCBlockIndentWidth": make_range(0, 8),
@@ -59,7 +66,9 @@ mutation_rules = {
     "Regex": lambda value, mutation_rate: value,
     "PenaltyBreakAssignment": make_delta_sq(2),
     "AlignEscapedNewlines": make_choice("DontAlign", "Left", "Right"),
-    "BreakConstructorInitializers": make_choice("BeforeColon", "BeforeComma", "AfterColon"),
+    "BreakConstructorInitializers": make_choice(
+        "BeforeColon", "BeforeComma", "AfterColon"
+    ),
 }
 
 
@@ -71,12 +80,19 @@ def mutate_value(key, value, mutation_rate):
     if isinstance(value, bool):
         return not value
 
-    print("Unrecognized setting, '{}: {}', in .clang-format configuration.".format(key, value), file=stderr)
+    print(
+        "Unrecognized setting, '{}: {}', in .clang-format configuration.".format(
+            key, value
+        ),
+        file=stderr,
+    )
     return value
 
 
 def visit_line(key, value, mutation_rate):
-    return mutate_value(key, value, mutation_rate) if random() < mutation_rate else value
+    return (
+        mutate_value(key, value, mutation_rate) if random() < mutation_rate else value
+    )
 
 
 def mutate(config, mutation_rate):
@@ -91,8 +107,10 @@ def recombine(scored_parents, args):
 
     # rank-based selection with elitism
     elite_configs = [fittest_config]
-    recombined_configs = [mutate(ranked[int(random() * random() * len(ranked))][1], args.mutation) for _ in
-                          range(args.population - 1)]
+    recombined_configs = [
+        mutate(ranked[int(random() * random() * len(ranked))][1], args.mutation)
+        for _ in range(args.population - 1)
+    ]
     recombination = elite_configs + recombined_configs
 
     return (fittest, recombination)

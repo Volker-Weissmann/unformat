@@ -39,8 +39,10 @@ def main(args, pool):
         population = make_initial_configs(args)
 
         for generation in range(args.generations):
-            print("{}: ".format(generation), end='', file=stderr, flush=True)
-            (generation_fittest, population) = generate(population, source_filenames, args, pool)
+            print("{}: ".format(generation), end="", file=stderr, flush=True)
+            (generation_fittest, population) = generate(
+                population, source_filenames, args, pool
+            )
             print(" {}".format(generation_fittest[0]), file=stderr, flush=True)
 
             if not fittest or generation_fittest[0] < fittest[0]:
@@ -59,16 +61,43 @@ def main(args, pool):
 
 
 if __name__ == "__main__":
-    parser = ArgumentParser(description="generates .clang-format file from example codebase")
+    parser = ArgumentParser(
+        description="generates .clang-format file from example codebase"
+    )
 
-    parser.add_argument("-c", "--command", help="clang-format command", default="clang-format")
-    parser.add_argument("-g", "--generations", help="maximum number of generations", type=int, default=1000000)
-    parser.add_argument("-i", "--initial", help="initial .clang-format file (\"\" for clang-format default styles)", default=None)
-    parser.add_argument("-j", "--jobs", help="number of parallel processes", type=int, default=cpu_count())
-    parser.add_argument("-m", "--mutation", help="mutation rate", type=float, default=0.05)
-    parser.add_argument("-p", "--population", help="population size", type=int, default=40)
-    parser.add_argument("-r", "--root", help="project root (location for .clang-format file)")
-    parser.add_argument("examples", help="path to example source files", nargs='+')
+    parser.add_argument(
+        "-c", "--command", help="clang-format command", default="clang-format"
+    )
+    parser.add_argument(
+        "-g",
+        "--generations",
+        help="maximum number of generations",
+        type=int,
+        default=1000000,
+    )
+    parser.add_argument(
+        "-i",
+        "--initial",
+        help='initial .clang-format file ("" for clang-format default styles)',
+        default=None,
+    )
+    parser.add_argument(
+        "-j",
+        "--jobs",
+        help="number of parallel processes",
+        type=int,
+        default=cpu_count(),
+    )
+    parser.add_argument(
+        "-m", "--mutation", help="mutation rate", type=float, default=0.05
+    )
+    parser.add_argument(
+        "-p", "--population", help="population size", type=int, default=40
+    )
+    parser.add_argument(
+        "-r", "--root", help="project root (location for .clang-format file)"
+    )
+    parser.add_argument("examples", help="path to example source files", nargs="+")
 
     args = parser.parse_args()
 

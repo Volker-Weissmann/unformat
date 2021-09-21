@@ -9,7 +9,7 @@ CONFIG_FILENAME = ".clang-format"
 
 def make_default_config(command, style):
     args = [command, "-dump-config"] + ["-style={}".format(style)] if style else []
-    config_buffer = check_output(args, stderr=PIPE).decode('utf-8')
+    config_buffer = check_output(args, stderr=PIPE).decode("utf-8")
     config = safe_load(config_buffer)
     return config
 
@@ -18,13 +18,20 @@ def make_initial_configs(args):
     if args.initial:
         config_filepath = args.initial
         with open(config_filepath) as config_file:
-            print("Using the provided configuration file, '{}'".format(args.initial), file=stderr)
+            print(
+                "Using the provided configuration file, '{}'".format(args.initial),
+                file=stderr,
+            )
             return [safe_load(config_file.read())]
     elif args.initial is None and args.root:
         config_filepath = path.join(args.root, CONFIG_FILENAME)
         try:
             with open(config_filepath) as config_file:
-                print("Using the configuration file from the provided root, '{}'".format(args.root))
+                print(
+                    "Using the configuration file from the provided root, '{}'".format(
+                        args.root
+                    )
+                )
                 return [safe_load(config_file.read())]
         except FileNotFoundError:
             pass
@@ -36,10 +43,8 @@ def make_initial_configs(args):
 
 def present_config(config, args, exiting):
     config_buffer = dump(
-        config,
-        default_flow_style=False,
-        explicit_start=True,
-        explicit_end=True)
+        config, default_flow_style=False, explicit_start=True, explicit_end=True
+    )
     if args.root:
         # If output is file, always write out results
         # because the same copy can be updated with latest and greatest.
