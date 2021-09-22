@@ -5,7 +5,7 @@ from glob import glob
 from multiprocessing import cpu_count, Pool
 from sys import stderr
 
-from config import make_initial_configs, present_config
+from config import make_initial_configs, prepare_fix_settings, present_config
 from measure import MeasureConfigTask
 from recombine import recombine
 
@@ -21,13 +21,15 @@ def gather_source_filenames(examples):
     return source_filenames
 
 
-def score_population(population, source_filenames, args, pool):
-    task = MeasureConfigTask(source_filenames, args)
+def score_population(population, source_filenames, args, pool, fix_settings):
+    task = MeasureConfigTask(source_filenames, args, fix_settings)
     return pool.map(task, population)
 
 
-def generate(population, source_filenames, args, pool):
-    scored_population = score_population(population, source_filenames, args, pool)
+def generate(population, source_filenames, args, pool, fix_settings):
+    scored_population = score_population(
+        population, source_filenames, args, pool, fix_settings
+    )
     return recombine(scored_population, args)
 
 
@@ -37,17 +39,19 @@ def main(args, pool):
     try:
         source_filenames = gather_source_filenames(args.examples)
         population = make_initial_configs(args)
+        fix_settings = prepare_fix_settings(args, population)
 
         for generation in range(args.generations):
             print("{}: ".format(generation), end="", file=stderr, flush=True)
             (generation_fittest, population) = generate(
-                population, source_filenames, args, pool
+                population, source_filenames, args, pool, fix_settings
             )
             print(" {}".format(generation_fittest[0]), file=stderr, flush=True)
 
             if not fittest or generation_fittest[0] < fittest[0]:
                 fittest = generation_fittest
-                present_config(fittest[1], args, exiting=False)
+                merged = {**fittest[1], **fix_settings}
+                present_config(merged, args, exiting=False)
 
                 if all([score == 0 for score in fittest[0]]):
                     print("Matching configuration file found.", file=stderr)
@@ -57,7 +61,8 @@ def main(args, pool):
         print("\nProgram interrupted.", file=stderr)
     finally:
         if fittest:
-            present_config(fittest[1], args, exiting=True)
+            merged = {**fittest[1], **fix_settings}
+            present_config(merged, args, exiting=True)
 
 
 if __name__ == "__main__":
@@ -79,6 +84,12 @@ if __name__ == "__main__":
         "-i",
         "--initial",
         help='initial .clang-format file ("" for clang-format default styles)',
+        default=None,
+    )
+    parser.add_argument(
+        "-f",
+        "--fix",
+        help=".clang-format file that contains settings that will not be mutated",
         default=None,
     )
     parser.add_argument(

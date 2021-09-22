@@ -7,12 +7,16 @@ from tempfile import TemporaryDirectory
 
 
 class MeasureConfigTask:
-    def __init__(self, source_filenames, args):
+    def __init__(self, source_filenames, args, fix_settings):
         self._source_filenames = source_filenames
         self._args = args
+        self._fix_settings = fix_settings
 
     def __call__(self, config):
-        return (measure(config, self._source_filenames, self._args), config)
+        return (
+            measure(config, self._source_filenames, self._args, self._fix_settings),
+            config,
+        )
 
 
 def get_num_deleted_lines(source_filename, formatted_source):
@@ -45,11 +49,12 @@ def measure_file(source_filename, workspace_path, command):
     return (num_deleted_lines, edit_distance)
 
 
-def measure(config, source_filenames, args):
+def measure(config, source_filenames, args, fix_settings):
     with TemporaryDirectory() as workspace_path:
         config_filename = path.join(workspace_path, ".clang-format")
         with open(config_filename, "wt") as config_file:
-            config_file.write(dump(config))
+            merged = {**config, **fix_settings}
+            config_file.write(dump(merged))
 
         scores = [
             measure_file(source_filename, workspace_path, args.command)

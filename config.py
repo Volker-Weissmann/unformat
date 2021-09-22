@@ -41,6 +41,24 @@ def make_initial_configs(args):
     return [make_default_config(args.command, style) for style in styles]
 
 
+# Note: This modifies `population`
+def prepare_fix_settings(args, population):
+    if args.fix is None:
+        return []
+    else:
+        with open(args.fix) as fix_file:
+            print(
+                "Using file, '{}' for fixed settings".format(args.initial),
+                file=stderr,
+            )
+            fix_settings = safe_load(fix_file.read())
+        for i in range(len(population)):
+            population[i] = {
+                k: v for (k, v) in population[i].items() if k not in fix_settings
+            }
+        return fix_settings
+
+
 def present_config(config, args, exiting):
     config_buffer = dump(
         config, default_flow_style=False, explicit_start=True, explicit_end=True
